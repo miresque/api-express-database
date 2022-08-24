@@ -4,20 +4,8 @@ const db = require("../../db");
 const { getAllBooks } = require("../domain/booksRepository")
 
 router.get('/', async (req, res) => {
-    // let sqlQuery = 'SELECT * FROM books'
-    // const queryParams = []
-
-    // if (req.query.type) {
-    //     queryParams.push(req.query.type)
-    //     sqlQuery += ' WHERE type = $1;'
-    // }
-    // if (req.query.topic) {
-    //     queryParams.push(req.query.topic)
-    //     sqlQuery += ' WHERE topic = $1;'
-    // }
-
-    // const queryData = await db.query(sqlQuery, queryParams)
     const allBooks = await getAllBooks(req.query)
+    
     res.status(200).json({
         books: allBooks.rows
     })
