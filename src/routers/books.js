@@ -1,23 +1,25 @@
 const express = require('express')
 const router = express.Router()
 const db = require("../../db");
+const { getAllBooks } = require("../domain/booksRepository")
 
 router.get('/', async (req, res) => {
-    let sqlQuery = 'SELECT * FROM books'
-    const queryParams = []
+    // let sqlQuery = 'SELECT * FROM books'
+    // const queryParams = []
 
-    if (req.query.type) {
-        queryParams.push(req.query.type)
-        sqlQuery += ' WHERE type = $1;'
-    }
-    if (req.query.topic) {
-        queryParams.push(req.query.topic)
-        sqlQuery += ' WHERE topic = $1;'
-    }
+    // if (req.query.type) {
+    //     queryParams.push(req.query.type)
+    //     sqlQuery += ' WHERE type = $1;'
+    // }
+    // if (req.query.topic) {
+    //     queryParams.push(req.query.topic)
+    //     sqlQuery += ' WHERE topic = $1;'
+    // }
 
-    const queryData = await db.query(sqlQuery, queryParams)
+    // const queryData = await db.query(sqlQuery, queryParams)
+    const allBooks = await getAllBooks(req.query)
     res.status(200).json({
-        books: queryData.rows
+        books: allBooks.rows
     })
 })
 
