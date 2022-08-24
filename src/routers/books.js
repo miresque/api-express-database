@@ -1,59 +1,35 @@
 const express = require('express')
 const router = express.Router()
 const db = require("../../db");
-const { getAllBooks } = require("../domain/booksRepository")
+const { getAllBooks, createBook, updateBook } = require("../domain/booksRepository")
 
 router.get('/', async (req, res) => {
     const allBooks = await getAllBooks(req.query)
-    
+
     res.status(200).json({
         books: allBooks.rows
     })
 })
 
 router.post('/', async (req, res) => {
-    let sqlQuery = 'INSERT INTO books(title, type, author, topic, publicationDate, pages) VALUES($1, $2, $3, $4, $5, $6) RETURNING *;'
-    const queryParams = [
-        req.body.title,
-        req.body.type,
-        req.body.author,
-        req.body.topic,
-        req.body.publicationDate,
-        req.body.pages
-    ]
-    const queryData = await db.query(sqlQuery, queryParams)
+    const newBook = await createBook(req.body)
+
     res.status(201).json({
-        book: queryData.rows[0]
+        book: newBook.rows[0]
     })
 })
 
 router.get('/:id', async (req, res) => {
-    let sqlQuery = 'SELECT * FROM books WHERE id = $1'
-    const queryParams = [Number(req.params.id)]
-    const queryData = await db.query(sqlQuery, queryParams)
+    const bookByID = await getAllBooks(req.params)
+
     res.status(200).json({
-        book: queryData.rows[0]
+        book: bookByID.rows[0]
     })
 })
 
 router.put('/:id', async (req, res) => {
-    let sqlQuery = `
-        UPDATE books 
-        SET title = $1, type = $2, author = $3, topic = $4, publicationDate = $5, pages = $6
-        WHERE id = $7
-        RETURNING *
-    `;
-    const queryParams = [
-        req.body.title,
-        req.body.type,
-        req.body.author,
-        req.body.topic,
-        req.body.publicationDate,
-        Number(req.body.pages),
-        Number(req.params.id)
-    ];
-    console.log(queryParams)
-    const queryData = await db.query(sqlQuery, queryParams);
+    const queryData = await updateBook(req.body, req.params)
+    
     res.status(201).json({
         book: queryData.rows[0]
     });
